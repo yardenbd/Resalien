@@ -1,0 +1,29 @@
+.responsive {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto; 
+    margin-top:  4rem;
+  }
+    @media (min-width: 576px) {
+      .responsive {
+        max-width: 540px; } }
+    @media (min-width: 768px) {
+      .responsive {
+        max-width: 720px; } }
+    @media (min-width: 992px) {
+      .responsive {
+        max-width: 25rem; } }
+    @media (min-width: 1200px) {
+      .responsive {
+        max-width: 25rem; } }
+        
+        .myModal {
+          padding: 1rem;
+          text-align: center;
+          width: 30rem;
+          z-index: 10;
+          position: fixed;
+          left: calc(50% - 15rem);
+        }
