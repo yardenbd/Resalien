@@ -10,11 +10,15 @@ import classes from './Login.module.css'
 import { registerUrl } from "../urls";
 import useHttp from '../hooks/use-http'
 import authHeader from "./headers";
+import {userObj} from '../dataModels/userObj'
+import { useEffect } from "react";
+import { companyUrl } from "../urls";
 const Register = () => {
   const {sendRequest} = useHttp()
   const history = useHistory()
   const { register, sendEmailToVerify } = useAuth();
   const [hasSubCompany, setHasSubCompany] = useState(false);
+  const [companies , setCompanies]=useState([])
   const emailInputRef = useRef("");
   const passwordInputRef = useRef("");
   const nameInputRef = useRef("");
@@ -25,6 +29,9 @@ const Register = () => {
   const toggleSubCompany = () => {
     setHasSubCompany((prev) => !prev);
   };
+  const companyResponse =(response)=>{
+    setCompanies(response)
+  }
   const applyData =(response)=>{
     console.log(response)
   }
@@ -37,27 +44,27 @@ const Register = () => {
     const userPhone = phoneInputRef.current.value;
     const userFax = faxInputRef.current.value;
     const userWebsite = websiteInputRef.current.value;
-    const registerUser={
-      userName,
+    console.log(userCompany)
+    const registerUser= userObj(userName,
       userEmail,
       userCompany,
       userWebsite,
       userPhone,
-      userFax
-    }
-    console.log(registerUser)
+      userFax) 
     register(userEmail, userPassword)
       .then((res) => {
        const accessToken = res._tokenResponse.idToken
        const refreshToken = res._tokenResponse.refreshToken
-       console.log(accessToken)
+      
         sendEmailToVerify();
        sendRequest({url:registerUrl,method:'POST', headers : authHeader(accessToken) ,body:registerUser },applyData)
 
       })
       .catch((err) => console.log(err));
   };
-
+  useEffect(()=>{
+    sendRequest({url:companyUrl},companyResponse)
+  },[])
   return (
     <Form onSubmit={handleSubmit}  className={classes.responsive} >
       <Row>
@@ -85,14 +92,20 @@ const Register = () => {
           />
         </Form.Group>
       </Row>
-      <Row>
-        <Form.Group as={Col}>
-          <Form.Label>Company</Form.Label>
-          <Form.Control placeholder="Company name" type="text"  ref={companyNameInputRef}/>
-        </Form.Group>
-      </Row>
       <br />
-      <Row>
+     <Row>
+          <Form.Group as={Col}>
+            <Form.Select defaultValue="Choose" style={{width:'12rem'}} ref={companyNameInputRef} >
+              <option>Choose...</option>
+              {/* <option>...</option> */}
+              {companies.map(company=>(
+                <option key={company}> {company}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+        </Row>
+      <br />
+      {/* <Row>
         <Form.Group id="formGridCheckbox" as={Col}>
           <Form.Check
             type="checkbox"
@@ -112,7 +125,7 @@ const Register = () => {
           </Form.Group>
         </Row>
       )}
-       <br />
+       <br /> */}
       <Row>
       <Form.Group as={Col}>
           <Form.Label>Fax</Form.Label>

@@ -5,14 +5,23 @@ import { Link } from "react-router-dom";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import FailLoginModal from "../components/modal/FailLoginModal";
 import Backdrop from '../components/Backdrop'
+import {loginUrl} from '../urls'
+import useHttp from '../hooks/use-http'
+import { getFromLocalStorage } from "../services/localStorage";
+import authHeader from "./headers";
+import { saveToLocalStorage } from "../services/localStorage";
 export default function Login(props) {
   const emailRef = useRef();
   const passwordRef = useRef();
+  const {sendRequest}= useHttp()
   const { login } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(null);
   const [modalShow, setModalShow] = useState(false);
+  const serverRes =(response)=>{
+    console.log(response)
+  }
   function handleSubmit(e) {
     e.preventDefault();
     try {
@@ -24,7 +33,12 @@ export default function Login(props) {
         setIsVerified(false)
         setModalShow(true)
       }
-      });
+      else
+      {
+        saveToLocalStorage('token',res._tokenResponse.idToken)
+        sendRequest({url:loginUrl,method:'POST',headers : authHeader(res._tokenResponse.idToken)},serverRes)
+      }
+      })
     } catch {
       setError("Failed to log in");
     }
